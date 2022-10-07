@@ -1,0 +1,50 @@
+==========================MASTER=======================================================
+
+wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz
+curl -O https://dlcdn.apache.org/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py --user
+sudo yum install java-1.8.0-openjdk
+tar -xvzf spark-3.3.0-bin-hadoop3.tgz
+tar -xvf hadoop-3.3.4.tar.gz
+vi hadoop-3.3.4/etc/hadoop/hadoop-env.sh
+=====================
+export JAVA_HOME=/usr/lib
+export HADOOP_HOME=/home/ec2-user/hadoop-3.3.4
+=====================
+export PATH=$PATH:$HADOOP_HOME/bin/
+export SPARK_HOME=/home/ec2-user/spark-3.3.0-bin-hadoop3
+wget http://downloads.lightbend.com/scala/2.11.8/scala-2.11.8.rpm
+sudo yum install scala-2.11.8.rpm
+cd /home/ec2-user/hadoop-3.3.4/share/hadoop/tools/lib
+cp aws-java-sdk-bundle-1.12.262.jar /home/ec2-user/spark-3.3.0-bin-hadoop3/jars
+cp hadoop-aws-3.3.4.jar /home/ec2-user/spark-3.3.0-bin-hadoop3/jars
+cd /home/ec2-user/spark-3.3.0-bin-hadoop3/conf
+touch spark_defaults.conf
+vi spark_defaults.conf
+==================
+spark.hadoop.fs.s3a.access.key **ACCESSKEY**
+spark.hadoop.fs.s3a.secret.key **SECRET**
+spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+spark.driver.extraClassPath /home/ec2-user/spark-3.3.0-bin-hadoop3/jars/hadoop-aws-3.3.4.jar:/home/ec2-user/spark-3.3.0-bin-hadoop3/jars/aws-java-sdk-bundle-1.12.262.jar
+==================
+cd ~
+vi hadoop-3.3.4/etc/hadoop/core-site.xml
+==================
+<property>
+<name>fs.s3.awsAccessKeyId</name>
+<value>**ACCESSKEY**</value>
+</property>
+<property>
+<name>fs.s3.awsSecretAccessKey</name>
+<value>**SECRET**</value>
+</property>
+=================
+cp hadoop-3.3.4/share/hadoop/tools/lib/aws-java-sdk-bundle-1.12.262.jar hadoop-3.3.4/share/hadoop/common/lib/
+cp hadoop-3.3.4/share/hadoop/tools/lib/hadoop-aws-3.3.4.jar hadoop-3.3.4/share/hadoop/common/lib/
+./spark-3.3.0-bin-hadoop3/sbin/start-master.sh
+cat **log**
+
+==========================WORKER============================================
+
+./spark-3.3.0-bin-hadoop3/sbin/start-worker.sh **pulled from master log should end with :7077**
