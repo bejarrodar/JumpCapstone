@@ -1,4 +1,4 @@
-host = "database-1.cuwpussgwc5p.us-east-1.rds.amazonaws.com"
+host = ""
 port = 3306
 user = "root"
 passw = "rootroot"
